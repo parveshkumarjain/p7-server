@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="P7 Protocol">
+<meta name="theme-color" content="#05080E">
+<title>P7 Protocol</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#05080E;--surf:#0C1320;--card:#101926;--bdr:#192840;--gold:#E8980A;--goldD:rgba(232,152,10,0.13);--goldB:rgba(232,152,10,0.3);--wht:#ECF2FF;--mut:#56698A;--grn:#19D972;--grnD:rgba(25,217,114,0.11);--grnB:rgba(25,217,114,0.3);--red:#FF3E5B;--redD:rgba(255,62,91,0.11);--redB:rgba(255,62,91,0.28);--ylw:#F5B800;--ylwD:rgba(245,184,0,0.11);--ylwB:rgba(245,184,0,0.3);--blu:#3F8EF7;--bluD:rgba(63,142,247,0.11);--bluB:rgba(63,142,247,0.28);--pur:#A855F7;--purD:rgba(168,85,247,0.11);--purB:rgba(168,85,247,0.28)}
+body{background:var(--bg);color:var(--wht);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:76px}
+.hdr{background:var(--surf);border-bottom:1px solid var(--bdr);padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--bdr);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:100}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 3px 7px;background:none;border:none;color:var(--mut);font-size:9px;font-weight:600;cursor:pointer;gap:3px;font-family:inherit}
+.nb.on{color:var(--gold)}
+.pg{padding:14px;display:none;max-width:600px;margin:0 auto}
+.pg.on{display:block}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;margin-bottom:10px}
+.stl{font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1.2px;margin-bottom:11px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:7px}
+.sb{background:var(--surf);border-radius:8px;padding:10px 11px}
+.sl{font-size:9px;color:var(--mut);letter-spacing:.5px;margin-bottom:3px}
+.sv{font-size:15px;font-weight:900}
+input,select,textarea{background:var(--surf);border:1px solid var(--bdr);border-radius:7px;padding:10px 11px;color:var(--wht);font-size:14px;width:100%;outline:none;font-family:inherit;-webkit-appearance:none}
+input[type=date]{color-scheme:dark}
+textarea{resize:vertical;height:56px}
+.fl{font-size:10px;color:var(--mut);margin-bottom:4px}
+.fld{margin-bottom:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:9px 14px;border-radius:7px;border:1px solid;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit}
+.btn:active{opacity:.7}
+.btn.gold{background:var(--goldD);color:var(--gold);border-color:var(--goldB)}
+.btn.blue{background:var(--bluD);color:var(--blu);border-color:var(--bluB)}
+.btn.green{background:var(--grnD);color:var(--grn);border-color:var(--grnB)}
+.btn.red{background:var(--redD);color:var(--red);border-color:var(--redB)}
+.btn.muted{background:transparent;color:var(--mut);border-color:var(--bdr)}
+.btn.full{width:100%}
+.btn.sm{padding:6px 11px;font-size:10px}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{display:inline-flex;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700}
+.err{background:var(--redD);border:1px solid var(--redB);border-radius:9px;padding:10px 13px;font-size:12px;color:var(--red);margin-bottom:10px;line-height:1.6}
+.ok{background:var(--grnD);border:1px solid var(--grnB);border-radius:9px;padding:10px 13px;font-size:12px;color:var(--grn);margin-bottom:10px}
+.empty{text-align:center;padding:44px 20px;color:var(--mut);font-size:12px;line-height:1.8}
+.gate-rule{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--bdr);cursor:pointer}
+.gate-rule:last-child{border-bottom:none}
+.chk{width:21px;height:21px;border-radius:5px;border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.chk.on{background:var(--grnD);border-color:var(--grn)}
+.gate-res{border-radius:11px;padding:14px;text-align:center;border:1px solid;margin:10px 0}
+.trow{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px 13px;margin-bottom:8px}
+.tm{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--mut);margin-bottom:6px}
+.score-track{height:5px;background:var(--bdr);border-radius:3px;overflow:hidden;margin-top:4px}
+.score-fill{height:100%;border-radius:3px}
+.lbox{background:var(--surf);border-radius:6px;padding:7px 8px}
+.ll{font-size:8px;color:var(--mut);margin-bottom:2px}
+.lv{font-size:11px;font-weight:700}
+.pst-g{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.pst{background:var(--surf);border:1px solid var(--bdr);border-radius:7px;padding:8px 5px;color:var(--mut);font-size:10px;font-weight:600;cursor:pointer;text-align:center;font-family:inherit}
+.pst:active{background:var(--goldD);color:var(--gold);border-color:var(--goldB)}
+.spin{display:inline-block;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.srv-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0}
+.setup-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+.step-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px;width:100%;max-width:440px;text-align:left;margin-bottom:12px}
+.step-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--bdr);font-size:12px;color:var(--mut);line-height:1.6}
+.step-row:last-child{border-bottom:none}
+.step-num{color:var(--gold);font-weight:900;font-size:13px;min-width:18px;flex-shrink:0}
+.info-row{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr);font-size:12px}
+.info-row:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+
+<!-- ── SETUP SCREEN ──────────────────────────────────────────── -->
+<div id="setup" style="display:none">
+<div class="setup-screen">
+  <div style="font-size:26px;font-weight:900;letter-spacing:3px;color:var(--gold);margin-bottom:4px">P7 PROTOCOL</div>
+  <div style="font-size:10px;color:var(--mut);letter-spacing:1.5px;margin-bottom:28px">3 STRATEGIES · NSE · B8 LP7 M11</div>
+
+  <div class="step-card">
+    <div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;margin-bottom:10px">HOW THIS WORKS</div>
+    <div class="step-row"><span class="step-num">1</span><span>Your iPhone tool calls a <b style="color:var(--wht)">free cloud server</b> you deploy once</span></div>
+    <div class="step-row"><span class="step-num">2</span><span>The server fetches NSE data (yfinance) and sends it to your phone</span></div>
+    <div class="step-row"><span class="step-num">3</span><span>Works on iPhone anywhere — no laptop, no API subscription needed</span></div>
+  </div>
+
+  <div class="step-card">
+    <div style="font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;margin-bottom:10px">DEPLOY THE SERVER (5 MIN, FREE)</div>
+    <div class="step-row"><span class="step-num">1</span><span>Create free account at <b style="color:var(--wht)">github.com</b> if you don't have one</span></div>
+    <div class="step-row"><span class="step-num">2</span><span>Create new repo, upload <b style="color:var(--wht)">p7_server.py</b> and <b style="color:var(--wht)">requirements.txt</b></span></div>
+    <div class="step-row"><span class="step-num">3</span><span>Go to <b style="color:var(--wht)">render.com</b> → free account → New Web Service → connect your GitHub repo</span></div>
+    <div class="step-row"><span class="step-num">4</span><span>Set: Language = <b style="color:var(--wht)">Python</b>, Start Command = <b style="color:var(--wht)">gunicorn p7_server:app</b></span></div>
+    <div class="step-row"><span class="step-num">5</span><span>Deploy. Copy the URL (e.g. <b style="color:var(--wht)">https://p7-xxx.onrender.com</b>)</span></div>
+    <div class="step-row"><span class="step-num">6</span><span>Paste URL below and tap Connect</span></div>
+  </div>
+
+  <div style="width:100%;max-width:440px">
+    <div class="fl">YOUR RENDER SERVER URL</div>
+    <input type="url" id="srv-url-inp" placeholder="https://p7-xxx.onrender.com" style="margin-bottom:8px">
+    <button class="btn gold full" onclick="testAndSave()" id="conn-btn">Test Connection & Save →</button>
+    <div id="conn-result" style="margin-top:8px"></div>
+    <div style="font-size:10px;color:var(--mut);margin-top:14px;line-height:1.7">After saving: Safari → Share button → "Add to Home Screen" to install as iPhone app.<br><br>Note: Free Render tier sleeps after 15 min inactivity. First scan may take ~30 seconds to wake up — subsequent calls are instant.</div>
+  </div>
+</div>
+</div>
+
+<!-- ── MAIN APP ──────────────────────────────────────────────── -->
+<div id="app" style="display:none">
+  <div class="hdr">
+    <div>
+      <div style="font-size:14px;font-weight:900;letter-spacing:2.5px;color:var(--gold)">P7 PROTOCOL</div>
+      <div style="font-size:9px;color:var(--mut);letter-spacing:1.2px;margin-top:1px">3 STRATEGIES · B8 LP7 M11</div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <div id="srv-status" onclick="checkServer()" style="cursor:pointer;font-size:10px;padding:4px 9px;border-radius:20px;font-weight:700;border:1px solid"></div>
+      <div id="dchip" style="padding:5px 10px;border-radius:7px;text-align:right;font-size:10px;font-weight:800;border:1px solid"></div>
+    </div>
+  </div>
+
+  <div id="pg-dash" class="pg on"><div id="d-body"></div></div>
+  <div id="pg-scan" class="pg"><div id="sc-body"></div></div>
+  <div id="pg-sigs" class="pg"><div id="sg-body"></div></div>
+  <div id="pg-gate" class="pg"><div id="gt-body"></div></div>
+  <div id="pg-trd"  class="pg"><div id="tr-body"></div></div>
+
+  <nav class="nav">
+    <button class="nb on" onclick="go('dash')" id="nb-dash"><span style="font-size:17px">📊</span>Dash</button>
+    <button class="nb"    onclick="go('scan')" id="nb-scan"><span style="font-size:17px">📡</span>Scanner</button>
+    <button class="nb"    onclick="go('sigs')" id="nb-sigs"><span style="font-size:17px">📈</span>Signals</button>
+    <button class="nb"    onclick="go('gate')" id="nb-gate"><span style="font-size:17px">🔒</span>Gate</button>
+    <button class="nb"    onclick="go('trd')"  id="nb-trd"> <span style="font-size:17px">📋</span>Trades</button>
+  </nav>
+</div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────
+const ST={trades:[],signals:[],capital:500000,gate:{},scanSym:'NIFTY50',scanRes:null,scanErr:'',prefill:null,tab:'dash',serverOk:null};
+function srvUrl(){return(localStorage.getItem('p7_srv')||'').replace(/\/$/,'');}
+
+// ── API ──────────────────────────────────────────────────────────
+async function apiGet(path){
+  const r=await fetch(srvUrl()+path,{signal:AbortSignal.timeout(20000)});
+  const j=await r.json();
+  if(!r.ok)throw new Error(j.error||`HTTP ${r.status}`);
+  return j;
+}
+async function checkServer(){
+  try{await apiGet('/api/health');ST.serverOk=true;}catch{ST.serverOk=false;}
+  drawSrvStatus();
+}
+function drawSrvStatus(){
+  const el=document.getElementById('srv-status');
+  if(!el)return;
+  if(ST.serverOk===null){el.style.background='var(--ylwD)';el.style.borderColor='var(--ylw)';el.style.color='var(--ylw)';el.textContent='⏳';}
+  else if(ST.serverOk){el.style.background='var(--grnD)';el.style.borderColor='var(--grnB)';el.style.color='var(--grn)';el.textContent='🟢 Live';}
+  else{el.style.background='var(--redD)';el.style.borderColor='var(--redB)';el.style.color='var(--red)';el.textContent='🔴 Off';}
+}
+
+// ── Setup ────────────────────────────────────────────────────────
+async function testAndSave(){
+  const url=document.getElementById('srv-url-inp').value.trim().replace(/\/$/,'');
+  if(!url){alert('Paste your Render URL');return;}
+  const btn=document.getElementById('conn-btn');
+  btn.innerHTML='<span class="spin">⏳</span> Testing…';btn.disabled=true;
+  document.getElementById('conn-result').innerHTML='';
+  try{
+    const r=await fetch(url+'/api/health',{signal:AbortSignal.timeout(35000)});
+    const j=await r.json();
+    if(r.ok&&j.status==='ok'){
+      localStorage.setItem('p7_srv',url);
+      document.getElementById('conn-result').innerHTML=`<div class="ok">✓ Connected! Server is live. Loading P7 Protocol…</div>`;
+      setTimeout(()=>{load();document.getElementById('setup').style.display='none';document.getElementById('app').style.display='block';render();},1200);
+    }else{throw new Error('Unexpected response from server');}
+  }catch(e){
+    document.getElementById('conn-result').innerHTML=`<div class="err"><b>Could not connect.</b><br>${e.message}<br><br>If you just deployed, the server may be waking up (30 sec). Try again in a moment.</div>`;
+  }
+  btn.innerHTML='Test Connection & Save →';btn.disabled=false;
+}
+
+// ── Maths ────────────────────────────────────────────────────────
+function ema(a,p){if(!a||a.length<p)return a?.[a.length-1]||0;const k=2/(p+1);let e=a.slice(0,p).reduce((x,y)=>x+y,0)/p;for(let i=p;i<a.length;i++)e=a[i]*k+e*(1-k);return e;}
+function rsi(c,p=14){if(!c||c.length<p+1)return 50;const ch=c.slice(-p-1).map((x,i,a)=>i?x-a[i-1]:0).slice(1);const ag=ch.map(x=>x>0?x:0).reduce((a,b)=>a+b,0)/p;const al=ch.map(x=>x<0?-x:0).reduce((a,b)=>a+b,0)/p;return al===0?100:+(100-100/(1+ag/al)).toFixed(1);}
+function atr(hi,lo,cl,p=14){if(!hi||hi.length<p+2)return cl[cl.length-1]*0.01;const s=hi.length-p-1;const t=hi.slice(s).map((h,i)=>{const l=lo[s+i],pc=i?cl[s+i-1]:cl[s];return Math.max(h-l,Math.abs(h-pc),Math.abs(l-pc));});return t.reduce((a,b)=>a+b,0)/t.length;}
+
+// ══ 3 STRATEGIES (hardcoded per chart reading) ════════════════════
+function saturnSwing(cl,hi,lo,vol,p){
+  const e20=ema(cl.slice(-60),20),e50=ema(cl.slice(-60),50),r=rsi(cl),atrV=atr(hi,lo,cl);
+  const avgV=vol.slice(-20).reduce((a,b)=>a+b,0)/20,latV=vol[vol.length-1]||0;
+  const pb3=(cl.length>=4?(cl[cl.length-4]-p)/cl[cl.length-4]*100:0);
+  const e20d=(p-e20)/e20*100;
+  const cs=[
+    {ok:e20>e50,           y:'EMA20 ₹'+e20.toFixed(0)+' > EMA50 ₹'+e50.toFixed(0)+' — uptrend',         n:'EMA20 < EMA50 — no uptrend, skip'},
+    {ok:e20d>=-1&&e20d<=3, y:'Price '+e20d.toFixed(1)+'% from EMA20 — pullback zone',                     n:'Price '+e20d.toFixed(1)+'% from EMA20 — not in pullback zone'},
+    {ok:r>=38&&r<=58,      y:'RSI '+r+' — healthy cooling (38-58)',                                        n:'RSI '+r+' — outside ideal 38-58 zone'},
+    {ok:pb3<=-0.5&&pb3>=-7,y:Math.abs(pb3.toFixed(1))+'% 3-day pullback — healthy retracement',           n:'Insufficient pullback (need 0.5–7%)'},
+    {ok:latV<avgV*1.1,     y:'Volume declining on pullback — clean retracement',                           n:'Volume elevated on pullback — caution'},
+  ];
+  const sc=cs.filter(c=>c.ok).length,active=sc>=4&&e20>e50;
+  return{name:'SATURN SWING',code:'S1',col:'var(--blu)',bg:'var(--bluD)',bdr:'var(--bluB)',active,sc,max:5,signal:active?'BUY':'WAIT',cs,
+    entry:p,target:active?+(p+atrV*2.3).toFixed(0):null,sl:active?+(Math.min(e20,p-atrV*1.3)).toFixed(0):null,
+    note:'Saturn rewards patience. Wait for price to come to EMA20.',e20:+e20.toFixed(0),e50:+e50.toFixed(0),rsi:r,atrV};
+}
+function ketuReversal(cl,hi,lo,vol,p){
+  const r=rsi(cl),atrV=atr(hi,lo,cl),e50=ema(cl.slice(-60),50);
+  const lo20=Math.min(...cl.slice(-20)),avgV=vol.slice(-20).reduce((a,b)=>a+b,0)/20,latV=vol[vol.length-1]||0;
+  const fall=(cl.length>=11?(cl[cl.length-11]-p)/cl[cl.length-11]*100:0);
+  const nearLo=(p-lo20)/lo20*100,revCandle=cl.length>=2&&p>cl[cl.length-2];
+  const cs=[
+    {ok:r<36,          y:'RSI '+r+' — extreme oversold below 36',                            n:'RSI '+r+' — not extreme enough (need < 36)'},
+    {ok:nearLo<=5,     y:nearLo.toFixed(1)+'% above 20-day low — demand zone',               n:nearLo.toFixed(1)+'% from low — too far from support'},
+    {ok:latV>avgV*1.4, y:'Volume '+((latV/avgV-1)*100).toFixed(0)+'% above avg — climactic', n:'No volume spike — selling not exhausted'},
+    {ok:fall>=8,       y:fall.toFixed(1)+'% fall in 10 days — washout complete',             n:fall.toFixed(1)+'% fall — may not be washed out yet'},
+    {ok:revCandle,     y:'Close above prev close — reversal candle forming',                  n:'No reversal candle yet — wait one more day'},
+  ];
+  const sc=cs.filter(c=>c.ok).length,active=sc>=3&&r<40;
+  return{name:'KETU REVERSAL',code:'S2',col:'var(--pur)',bg:'var(--purD)',bdr:'var(--purB)',active,sc,max:5,signal:active?'BUY':'WAIT',cs,
+    entry:p,target:active?+(p+atrV*3.5).toFixed(0):null,sl:active?+(lo20*0.993).toFixed(0):null,
+    note:'Ketu knows when the fall is done. 8th house transformation entry.',e50:+e50.toFixed(0),rsi:r,atrV};
+}
+function master11Breakout(cl,hi,lo,vol,p){
+  const e20=ema(cl.slice(-60),20),e50=ema(cl.slice(-60),50),r=rsi(cl),atrV=atr(hi,lo,cl);
+  const avgV=vol.slice(-20).reduce((a,b)=>a+b,0)/20,latV=vol[vol.length-1]||0;
+  const r5Hi=cl.length>=5?Math.max(...cl.slice(-5)):p*1.02,r5Lo=cl.length>=5?Math.min(...cl.slice(-5)):p*0.98;
+  const rngW=(r5Hi-r5Lo)/r5Lo*100;
+  const prev6Hi=cl.length>=6?Math.max(...cl.slice(-6,-1)):r5Hi,isBrk=p>prev6Hi;
+  const cs=[
+    {ok:e20>e50,        y:'EMA20 > EMA50 — uptrend context',                        n:'EMA20 < EMA50 — no uptrend context'},
+    {ok:rngW<=2.5,      y:'5-day range '+rngW.toFixed(1)+'% — tight coil',          n:'5-day range '+rngW.toFixed(1)+'% — not tight (need ≤2.5%)'},
+    {ok:r>=48&&r<=68,   y:'RSI '+r+' — momentum loading zone (48-68)',               n:'RSI '+r+' — outside ideal zone'},
+    {ok:latV>avgV*1.4,  y:'Volume '+((latV/avgV-1)*100).toFixed(0)+'% above avg',   n:'No volume surge on breakout'},
+    {ok:isBrk,          y:'Breaking above 5-day range high',                         n:'Not yet breaking above range'},
+  ];
+  const sc=cs.filter(c=>c.ok).length,active=sc>=4&&e20>e50&&isBrk;
+  return{name:'MASTER 11 BREAKOUT',code:'S3',col:'var(--gold)',bg:'var(--goldD)',bdr:'var(--goldB)',active,sc,max:5,signal:active?'BUY':'WAIT',cs,
+    entry:p,target:active?+(p+(r5Hi-r5Lo)*3).toFixed(0):null,sl:active?+(r5Lo*0.997).toFixed(0):null,
+    note:'Master 11 moments are rare. 2-3 per month. When it fires — act.',e20:+e20.toFixed(0),e50:+e50.toFixed(0),rsi:r,atrV,rng:+rngW.toFixed(1)};
+}
+function runAll(data){
+  const{closes:cl,highs:hi,lows:lo,volumes:vol,cur:price}=data;
+  if(!cl||cl.length<45)return null;
+  return{s1:saturnSwing(cl,hi,lo,vol,price),s2:ketuReversal(cl,hi,lo,vol,price),s3:master11Breakout(cl,hi,lo,vol,price),price,change:data.prev?+((price-data.prev)/data.prev*100).toFixed(2):0,at:data.at};
+}
+
+// ── Numerology ────────────────────────────────────────────────────
+function nr(n){while(n>9)n=[...String(n)].reduce((a,d)=>a+ +d,0);return n;}
+function dayI(){const d=new Date(),n=nr(d.getDate()+d.getMonth()+1+nr(d.getFullYear()));const M={1:{l:'Strong',c:'grn',s:'Entries OK'},2:{l:'Avoid',c:'red',s:'Stay flat'},3:{l:'Selective',c:'ylw',s:'A-grade only'},4:{l:'Cautious',c:'ylw',s:'Reduce size'},5:{l:'Strong',c:'grn',s:'Clarity'},6:{l:'Avoid',c:'red',s:'Venus trap'},7:{l:'Peak ★',c:'grn',s:'Max clarity'},8:{l:'Cautious',c:'ylw',s:'Half size'},9:{l:'Exit Only',c:'ylw',s:'No fresh entries'}};return{...M[n]||M[1],n,ds:d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})};}
+function gc(c){return c==='grn'?'var(--grn)':c==='red'?'var(--red)':'var(--ylw)';}
+function gbc(c){return c==='grn'?'var(--grnD)':c==='red'?'var(--redD)':'var(--ylwD)';}
+
+// ── Persist ───────────────────────────────────────────────────────
+function save(){localStorage.setItem('p7_t',JSON.stringify(ST.trades));localStorage.setItem('p7_s',JSON.stringify(ST.signals));localStorage.setItem('p7_c',ST.capital);}
+function load(){try{ST.trades=JSON.parse(localStorage.getItem('p7_t')||'[]');}catch{ST.trades=[];}try{ST.signals=JSON.parse(localStorage.getItem('p7_s')||'[]');}catch{ST.signals=[];}ST.capital=+localStorage.getItem('p7_c')||500000;}
+const f={pct:n=>n==null||isNaN(n)?'—':(n>=0?'+':'')+n.toFixed(2)+'%',rs:n=>n==null||isNaN(n)?'—':(n>=0?'+':'-')+'₹'+Math.abs(n).toLocaleString('en-IN',{maximumFractionDigits:0}),pr:n=>n?'₹'+n.toLocaleString('en-IN'):'—',tod:()=>new Date().toISOString().split('T')[0]};
+
+// ── Nav ───────────────────────────────────────────────────────────
+function go(tab){document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));document.getElementById('pg-'+tab).classList.add('on');document.getElementById('nb-'+tab).classList.add('on');ST.tab=tab;rend(tab);}
+function rend(t){if(t==='dash')rDash();else if(t==='scan')rScan();else if(t==='sigs')rSigs();else if(t==='gate')rGate();else if(t==='trd')rTrd();}
+function render(){dDay();dSrv();rend(ST.tab);}
+function dDay(){const d=dayI(),c=gc(d.c),bg=gbc(d.c);const el=document.getElementById('dchip');if(!el)return;el.style.background=bg;el.style.borderColor=c;el.style.color=c;el.innerHTML=`<div style="font-size:9px">${d.ds}</div><div style="font-size:10px;font-weight:900">Day ${d.n} — ${d.l}</div>`;}
+function dSrv(){const el=document.getElementById('srv-status');if(!el)return;if(ST.serverOk===null){el.style.background='var(--ylwD)';el.style.borderColor='var(--ylwB)';el.style.color='var(--ylw)';el.textContent='⏳';}else if(ST.serverOk){el.style.background='var(--grnD)';el.style.borderColor='var(--grnB)';el.style.color='var(--grn)';el.textContent='🟢 Live';}else{el.style.background='var(--redD)';el.style.borderColor='var(--redB)';el.style.color='var(--red)';el.textContent='🔴 Off';}}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────
+function rDash(){
+  const ct=ST.trades.filter(t=>t.exitPrice),ot=ST.trades.filter(t=>!t.exitPrice),tw=ct.filter(t=>t.pnlPct>0),tPnl=ct.reduce((s,t)=>s+(t.pnlRs||0),0),tWR=ct.length?(tw.length/ct.length*100).toFixed(0):0;
+  const cS=ST.signals.filter(s=>s.status!=='OPEN'),oS=ST.signals.filter(s=>s.status==='OPEN'),sW=cS.filter(s=>s.pnlPct>0),sWR=cS.length?(sW.length/cS.length*100).toFixed(0):0;
+  const gS=GATES.filter(r=>ST.gate[r.id]).length,d=dayI(),daycol=gc(d.c);
+  const stratPerf=(code,label,col)=>{const ss=ST.signals.filter(s=>s.code===code),cs=ss.filter(s=>s.status!=='OPEN'),cw=cs.filter(s=>s.pnlPct>0),wr=cs.length?(cw.length/cs.length*100).toFixed(0):'—';return`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr)"><div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:${col};display:inline-block;flex-shrink:0"></span><span style="font-size:11px;font-weight:700;color:${col}">${code}</span><span style="font-size:11px;color:var(--mut)">${label}</span></div><div><span style="font-size:11px;color:var(--wht)">${ss.length} sigs</span><span style="font-size:11px;color:${cs.length?'var(--grn)':'var(--mut)'};margin-left:7px">${wr}% WR</span></div></div>`;};
+  document.getElementById('d-body').innerHTML=`
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div class="sl">CAPITAL</div><div style="font-size:22px;font-weight:900">₹${ST.capital.toLocaleString('en-IN')}</div></div>
+      <div style="text-align:right"><div class="sl">MAX RISK/TRADE</div><div style="font-size:18px;font-weight:800;color:var(--ylw)">₹${(ST.capital*0.015).toLocaleString('en-IN',{maximumFractionDigits:0})}</div></div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:6px">
+      <button class="btn gold sm" onclick="showCapEdit()">✏️ Capital</button>
+      <button class="btn gold sm" onclick="go('scan')">📡 Scanner</button>
+      <button class="btn muted sm" onclick="showSettings()">⚙️ Server</button>
+    </div>
+    <div id="cap-area"></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="stl" style="color:var(--blu)">📡 SIGNALS</div><div class="g2">
+      <div class="sb"><div class="sl">TOTAL</div><div class="sv">${ST.signals.length}</div></div>
+      <div class="sb"><div class="sl">WIN RATE</div><div class="sv" style="color:${+sWR>=55?'var(--grn)':'var(--ylw)'}">${sWR}%</div></div>
+      <div class="sb"><div class="sl">OPEN</div><div class="sv" style="color:var(--ylw)">${oS.length}</div></div>
+      <div class="sb"><div class="sl">TRADED</div><div class="sv" style="color:var(--blu)">${ST.signals.filter(s=>s.tradeTaken).length}</div></div>
+    </div></div>
+    <div class="card"><div class="stl">📋 TRADES</div><div class="g2">
+      <div class="sb"><div class="sl">CLOSED</div><div class="sv">${ct.length}</div></div>
+      <div class="sb"><div class="sl">WIN RATE</div><div class="sv" style="color:${+tWR>=55?'var(--grn)':'var(--ylw)'}">${tWR}%</div></div>
+      <div class="sb"><div class="sl">OPEN</div><div class="sv" style="color:var(--ylw)">${ot.length}</div></div>
+      <div class="sb"><div class="sl">P&L</div><div class="sv" style="font-size:12px;color:${tPnl>=0?'var(--grn)':'var(--red)'}">${f.rs(tPnl)}</div></div>
+    </div></div>
+  </div>
+  <div class="card">
+    <div class="stl">STRATEGY BREAKDOWN</div>
+    ${stratPerf('S1','Saturn Swing','var(--blu)')}
+    ${stratPerf('S2','Ketu Reversal','var(--pur)')}
+    ${stratPerf('S3','Master 11','var(--gold)')}
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:12px">
+      <span style="color:var(--mut)">Day ${d.n} energy</span>
+      <span style="font-weight:700;color:${daycol}">${d.l} — ${d.s}</span>
+    </div>
+  </div>
+  ${ST.serverOk===false?`<div class="err"><b>Server offline.</b> Tap 🔴 Off in header to recheck. First scan may take 30s to wake up.</div>`:''}
+  ${ot.length>0?`<div class="card"><div class="stl" style="color:var(--ylw)">⚡ OPEN (${ot.length})</div>${ot.map(t=>`<div style="padding:6px 0;border-bottom:1px solid var(--bdr);font-size:11px;display:flex;justify-content:space-between"><span><span style="color:var(--gold);font-weight:800">${t.symbol}</span> <span style="font-size:9px;color:${t.code==='S1'?'var(--blu)':t.code==='S2'?'var(--pur)':'var(--gold)'}">${t.code}</span> <span style="color:var(--mut);margin-left:5px">${f.pr(t.entry)} → ${f.pr(t.target)}</span></span></div>`).join('')}</div>`:''}`;
+}
+function showCapEdit(){document.getElementById('cap-area').innerHTML=`<div style="display:flex;gap:6px;margin-top:8px"><input type="number" id="ci" value="${ST.capital}" style="flex:1"><button class="btn gold sm" onclick="saveCap()">Save</button></div>`;}
+function saveCap(){const v=+document.getElementById('ci')?.value;if(v>0){ST.capital=v;save();rDash();}}
+function showSettings(){
+  document.getElementById('cap-area').innerHTML=`<div style="margin-top:10px"><div class="fl">RENDER SERVER URL</div><input id="srv-inp" value="${srvUrl()}" style="margin-bottom:8px"><button class="btn gold sm" onclick="updateServer()">Update & Test</button><div id="srv-test-res" style="margin-top:7px"></div></div>`;
+}
+async function updateServer(){
+  const url=document.getElementById('srv-inp').value.trim().replace(/\/$/,'');
+  if(!url)return;
+  const el=document.getElementById('srv-test-res');
+  el.innerHTML='<span class="spin">⏳</span> Testing…';
+  try{
+    const r=await fetch(url+'/api/health',{signal:AbortSignal.timeout(35000)});
+    const j=await r.json();
+    if(r.ok&&j.status==='ok'){localStorage.setItem('p7_srv',url);ST.serverOk=true;dSrv();el.innerHTML='<span style="color:var(--grn)">✓ Connected and saved</span>';}
+    else throw new Error('Bad response');
+  }catch(e){el.innerHTML=`<span style="color:var(--red)">✗ ${e.message}</span>`;}
+}
+
+// ── SCANNER ───────────────────────────────────────────────────────
+const PRESETS=['NIFTY50','BANKNIFTY','RELIANCE','HDFCBANK','TCS','ICICIBANK','SBIN','BAJFINANCE','TATAMOTORS','TITAN','AXISBANK','KOTAKBANK'];
+function rScan(){
+  document.getElementById('sc-body').innerHTML=`
+  <div class="card">
+    <div class="stl">📡 3-STRATEGY SCANNER</div>
+    <div style="display:flex;gap:7px;margin-bottom:10px">
+      <input id="ss" value="${ST.scanSym}" placeholder="NIFTY50, RELIANCE…" style="flex:1;text-transform:uppercase;font-weight:700" oninput="ST.scanSym=this.value.toUpperCase()">
+      <button class="btn gold" onclick="doScan()" id="scbtn">Scan →</button>
+    </div>
+    <div class="pst-g">${PRESETS.map(p=>`<button class="pst" onclick="qScan('${p}')">${p}</button>`).join('')}</div>
+    <div style="font-size:10px;color:var(--mut);margin-top:10px;line-height:1.7">Scans all 3 strategies simultaneously:<br>
+      <span style="color:var(--blu)">● S1 Saturn Swing</span> &nbsp;
+      <span style="color:var(--pur)">● S2 Ketu Reversal</span> &nbsp;
+      <span style="color:var(--gold)">● S3 Master 11</span>
+    </div>
+  </div>
+  <div id="serr"></div><div id="sres"></div>`;
+  if(ST.scanRes)drawRes();
+  if(ST.scanErr)document.getElementById('serr').innerHTML=`<div class="err">${ST.scanErr}</div>`;
+}
+function qScan(s){ST.scanSym=s;if(document.getElementById('ss'))document.getElementById('ss').value=s;doScan();}
+async function doScan(){
+  if(!ST.serverOk&&ST.serverOk!==null){ST.scanErr='Server offline. Tap 🔴 in header to recheck. May need 30s to wake up.';rScan();return;}
+  const sym=(ST.scanSym||'NIFTY50').trim();
+  ST.scanning=true;ST.scanErr='';ST.scanRes=null;
+  const btn=document.getElementById('scbtn');if(btn)btn.innerHTML='<span class="spin">⏳</span>';
+  document.getElementById('serr').innerHTML='';document.getElementById('sres').innerHTML='';
+  try{
+    const data=await apiGet(`/api/ohlcv?symbol=${encodeURIComponent(sym)}`);
+    ST.scanRes=runAll(data);
+    if(ST.scanRes)ST.scanRes.symbol=sym.toUpperCase();
+    ST.serverOk=true;dSrv();
+  }catch(e){ST.scanErr=e.message||'Fetch failed.';ST.serverOk=false;dSrv();}
+  ST.scanning=false;
+  if(btn)btn.innerHTML='Scan →';
+  if(ST.scanErr)document.getElementById('serr').innerHTML=`<div class="err">${ST.scanErr}</div>`;
+  if(ST.scanRes)drawRes();
+}
+function drawRes(){
+  const res=ST.scanRes;if(!res)return;
+  const el=document.getElementById('sres');if(!el)return;
+  const active=[res.s1,res.s2,res.s3].filter(s=>s.active);
+  const chStr=res.change>=0?`<span style="color:var(--grn)">+${res.change}%</span>`:`<span style="color:var(--red)">${res.change}%</span>`;
+  let html=`<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:8px">
+      <div>
+        <div style="font-size:20px;font-weight:900;color:var(--gold)">${res.symbol}</div>
+        <div style="margin-top:5px">
+          ${active.length?active.map(s=>`<span class="tag" style="background:${s.bg};color:${s.col};margin-right:4px">${s.code} ${s.signal}</span>`).join(''):`<span class="tag" style="background:var(--ylwD);color:var(--ylw)">NO SIGNAL — WAIT</span>`}
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:26px;font-weight:900">${f.pr(res.price)}</div>
+        <div style="font-size:10px;color:var(--mut)">${chStr} · ${res.at||''}</div>
+      </div>
+    </div>`;
+  for(const s of[res.s1,res.s2,res.s3]){
+    const bw=(s.sc/s.max*100)+'%',bc=s.sc>=4?s.col:s.sc>=2?'var(--ylw)':'var(--mut)';
+    const rrV=s.target&&s.sl?+(Math.abs(s.target-s.entry)/Math.abs(s.entry-s.sl)).toFixed(1):null;
+    html+=`<div style="border:1px solid ${s.active?s.bdr:'var(--bdr)'};border-radius:9px;padding:12px;margin-bottom:8px;background:${s.active?s.bg:'transparent'}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+        <div><span style="font-size:11px;font-weight:900;color:${s.col}">${s.code}</span><span style="font-size:11px;color:var(--mut);margin-left:6px">${s.name}</span></div>
+        <div style="display:flex;align-items:center;gap:7px">
+          <span style="font-size:12px;font-weight:900;color:${bc}">${s.sc}/${s.max}</span>
+          ${s.active?`<span class="tag" style="background:${s.bg};color:${s.col}">${s.signal}</span>`:'<span style="font-size:10px;color:var(--mut)">WAIT</span>'}
+        </div>
+      </div>
+      <div class="score-track"><div class="score-fill" style="width:${bw};background:${bc}"></div></div>
+      <div style="margin-top:8px">
+        ${s.cs.map(c=>`<div style="display:flex;gap:7px;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:11px;color:${c.ok?'var(--wht)':'var(--mut)'}"><span style="flex-shrink:0;color:${c.ok?'var(--grn)':'var(--red)'};font-size:12px">${c.ok?'✓':'✗'}</span><span>${c.ok?c.y:c.n}</span></div>`).join('')}
+      </div>
+      ${s.active?`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px">
+        <div class="lbox"><div class="ll">ENTRY</div><div class="lv" style="color:var(--wht)">${f.pr(s.entry)}</div></div>
+        <div class="lbox"><div class="ll">TARGET</div><div class="lv" style="color:var(--grn)">${f.pr(s.target)}</div></div>
+        <div class="lbox"><div class="ll">STOP</div><div class="lv" style="color:var(--red)">${f.pr(s.sl)}</div></div>
+        <div class="lbox"><div class="ll">R:R</div><div class="lv" style="color:${rrV>=2?'var(--grn)':rrV>=1.5?'var(--ylw)':'var(--red)'}">${rrV?rrV+'x':'—'}</div></div>
+      </div>
+      <div style="font-size:10px;color:var(--mut);margin-top:5px;font-style:italic">"${s.note}"</div>
+      <div class="btns">
+        <button class="btn sm" style="background:${s.bg};color:${s.col};border-color:${s.bdr}" onclick="trackSig('${s.code}')">+ Track</button>
+        <button class="btn blue sm" onclick="sigToTrd('${s.code}')">→ Trade</button>
+      </div>`:''}
+    </div>`;
+  }
+  el.innerHTML=html+'</div>';
+}
+function trackSig(code){
+  const res=ST.scanRes;if(!res)return;
+  const s=code==='S1'?res.s1:code==='S2'?res.s2:res.s3;
+  if(!s?.active)return;
+  ST.signals.unshift({id:Date.now(),date:f.tod(),symbol:res.symbol,code,name:s.name,col:s.col,bg:s.bg,signal:s.signal,score:s.sc,entryPrice:s.entry,currentPrice:s.entry,targetPrice:s.target,slPrice:s.sl,status:'OPEN',pnlPct:0,tradeTaken:false});
+  save();go('sigs');
+}
+function sigToTrd(code){
+  const res=ST.scanRes;if(!res)return;
+  const s=code==='S1'?res.s1:code==='S2'?res.s2:res.s3;
+  if(!s)return;
+  ST.prefill={symbol:res.symbol,entry:s.entry,sl:s.sl,target:s.target,type:'LONG',code,sigId:null};
+  go('gate');
+}
+
+// ── SIGNALS ───────────────────────────────────────────────────────
+function rSigs(){
+  const oS=ST.signals.filter(s=>s.status==='OPEN'),cS=ST.signals.filter(s=>s.status!=='OPEN'),sW=cS.filter(s=>s.pnlPct>0),sWR=cS.length?(sW.length/cS.length*100).toFixed(0):0;
+  document.getElementById('sg-body').innerHTML=`
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <div style="font-size:11px;color:var(--gold);font-weight:700">📈 SIGNAL TRACKER</div>
+    <div style="display:flex;gap:5px"><button class="btn blue sm" onclick="refAll()">↻ All</button><button class="btn gold sm" onclick="go('scan')">+ Scan</button></div>
+  </div>
+  ${ST.signals.length>0?`<div class="g4" style="margin-bottom:10px">
+    <div class="sb"><div class="sl">TOTAL</div><div class="sv">${ST.signals.length}</div></div>
+    <div class="sb"><div class="sl">WIN %</div><div class="sv" style="color:${+sWR>=55?'var(--grn)':'var(--ylw)'}">${sWR}%</div></div>
+    <div class="sb"><div class="sl">OPEN</div><div class="sv" style="color:var(--ylw)">${oS.length}</div></div>
+    <div class="sb"><div class="sl">HIT</div><div class="sv" style="color:var(--grn)">${ST.signals.filter(s=>s.status==='HIT_TARGET').length}</div></div>
+  </div>`:''}
+  ${!ST.signals.length?`<div class="empty">No signals tracked.<br>Use Scanner to find setups.</div>`:''}
+  ${ST.signals.map(sCrd).join('')}`;
+}
+function sCrd(s){
+  const pnl=(s.signal==='BUY'?(s.currentPrice-s.entryPrice)/s.entryPrice:(s.entryPrice-s.currentPrice)/s.entryPrice)*100;
+  const pc=pnl>0?'var(--grn)':pnl<0?'var(--red)':'var(--mut)';
+  return`<div style="background:var(--card);border:1px solid ${s.status==='HIT_TARGET'?'rgba(25,217,114,0.3)':s.status==='HIT_SL'?'rgba(255,62,91,0.22)':'var(--bdr)'};border-radius:10px;padding:12px 13px;margin-bottom:8px">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px;margin-bottom:7px">
+      <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+        <span style="color:var(--gold);font-weight:900;font-size:15px">${s.symbol}</span>
+        <span class="tag" style="background:${s.bg||'var(--bluD)'};color:${s.col||'var(--blu)'}">${s.code} ${s.signal}</span>
+        <span style="font-size:9px;color:var(--mut)">${s.status}</span>
+        ${s.tradeTaken?'<span style="font-size:9px;color:var(--blu)">TRADED ✓</span>':''}
+      </div>
+      <div style="font-size:18px;font-weight:900;color:${pc}">${f.pct(pnl)}</div>
+    </div>
+    <div class="tm">
+      <span>Entry <b style="color:var(--wht)">${f.pr(s.entryPrice)}</b></span>
+      <span>Now <b style="color:${pc}">${f.pr(s.currentPrice)}</b></span>
+      ${s.targetPrice?`<span>Tgt <b style="color:var(--grn)">${f.pr(s.targetPrice)}</b></span>`:''}
+      ${s.slPrice?`<span>SL <b style="color:var(--red)">${f.pr(s.slPrice)}</b></span>`:''}
+      <span style="color:var(--mut)">${s.date}</span>
+    </div>
+    <div class="btns">
+      <button class="btn blue sm" onclick="refSig(${s.id})">↻ Refresh</button>
+      ${s.status==='OPEN'&&!s.tradeTaken?`<button class="btn gold sm" onclick="sigGoTrd(${s.id})">→ Trade</button>`:''}
+      ${s.status==='OPEN'?`<button class="btn muted sm" onclick="clsSig(${s.id})">Close</button>`:''}
+      <button class="btn red sm" onclick="delSig(${s.id})">Del</button>
+    </div>
+  </div>`;
+}
+async function refSig(id){const s=ST.signals.find(x=>x.id===id);if(!s)return;try{const d=await apiGet(`/api/quote?symbol=${encodeURIComponent(s.symbol)}`);const p=d.price;if(p){ST.signals=ST.signals.map(x=>{if(x.id!==id)return x;const pp=(x.signal==='BUY'?(p-x.entryPrice)/x.entryPrice:(x.entryPrice-p)/x.entryPrice)*100;let st='OPEN';if(x.signal==='BUY'&&x.targetPrice&&p>=x.targetPrice)st='HIT_TARGET';if(x.signal==='BUY'&&x.slPrice&&p<=x.slPrice)st='HIT_SL';if(x.signal==='SELL'&&x.targetPrice&&p<=x.targetPrice)st='HIT_TARGET';if(x.signal==='SELL'&&x.slPrice&&p>=x.slPrice)st='HIT_SL';return{...x,currentPrice:p,pnlPct:+pp.toFixed(2),status:st};});save();rSigs();}}catch{}}
+async function refAll(){for(const s of ST.signals.filter(x=>x.status==='OPEN'))await refSig(s.id);}
+function clsSig(id){ST.signals=ST.signals.map(s=>s.id===id?{...s,status:'MANUAL_CLOSE'}:s);save();rSigs();}
+function delSig(id){ST.signals=ST.signals.filter(s=>s.id!==id);save();rSigs();}
+function sigGoTrd(id){const s=ST.signals.find(x=>x.id===id);if(!s)return;ST.prefill={symbol:s.symbol,entry:s.entryPrice,sl:s.slPrice,target:s.targetPrice,type:'LONG',code:s.code,sigId:s.id};go('gate');}
+
+// ── GATE ──────────────────────────────────────────────────────────
+const GATES=[{id:'g1',l:'Strategy Score ≥4/5',d:'The relevant strategy must score 4+ on its 5 conditions'},{id:'g2',l:'Trend Context',d:'S1/S3: EMA20>EMA50. S2: RSI<40 confirmed'},{id:'g3',l:'Stop Loss Defined',d:'Hard stop placed — max 1.5% of capital at risk'},{id:'g4',l:'R:R ≥ 1:2',d:'Reward at least 2x the risk — non-negotiable'},{id:'g5',l:'Volume Confirms',d:'Above-avg volume on signal or breakout candle'},{id:'g6',l:'Max 2 Open Trades',d:'Not already holding 2 positions'},{id:'g7',l:'Day Not Red',d:'Numerology day not 2 or 6 (red days)'}];
+function rGate(){
+  const gS=GATES.filter(r=>ST.gate[r.id]).length,gc2=gS>=5?'var(--grn)':gS>=3?'var(--ylw)':'var(--red)',gbg=gS>=5?'var(--grnD)':gS>=3?'var(--ylwD)':'var(--redD)',p=ST.prefill||{};
+  document.getElementById('gt-body').innerHTML=`
+  <div class="card">
+    <div class="stl">🔒 P7 TRADE GATE — 7 RULES</div>
+    <div style="font-size:11px;color:var(--mut);margin-bottom:12px">Score ≥5/7 before any entry.</div>
+    ${GATES.map((r,i)=>`<div class="gate-rule" onclick="tGate('${r.id}')"><div class="chk ${ST.gate[r.id]?'on':''}">${ST.gate[r.id]?`<span style="color:var(--grn);font-size:12px;font-weight:900">✓</span>`:''}</div><div><div style="font-size:12px;font-weight:600;color:${ST.gate[r.id]?'var(--wht)':'var(--mut)'}"><span style="color:var(--gold);font-size:9px;margin-right:5px">R${i+1}</span>${r.l}</div><div style="font-size:10px;color:var(--mut);margin-top:1px">${r.d}</div></div></div>`).join('')}
+  </div>
+  <div class="gate-res" style="background:${gbg};border-color:${gc2}">
+    <div style="font-size:26px;font-weight:900;color:${gc2};margin-bottom:4px">${gS}/7</div>
+    <div style="font-size:13px;font-weight:700;color:var(--wht)">${gS>=5?'🟢 Gate Open — log trade below':gS>=3?'🟡 Developing — wait for more':'🔴 Locked — do not trade'}</div>
+  </div>
+  ${gS>=5?`<div class="card"><div class="stl">LOG TRADE</div>
+    <div class="fld"><div class="fl">SYMBOL</div><input id="tf-s" value="${p.symbol||''}" style="text-transform:uppercase"></div>
+    <div class="g2">
+      <div class="fld"><div class="fl">DIRECTION</div><select id="tf-d"><option value="LONG">LONG/BUY</option><option value="SHORT">SHORT/SELL</option></select></div>
+      <div class="fld"><div class="fl">STRATEGY</div><select id="tf-c"><option value="S1">S1 Saturn Swing</option><option value="S2">S2 Ketu Reversal</option><option value="S3">S3 Master 11</option></select></div>
+    </div>
+    <div class="g2">
+      <div class="fld"><div class="fl">ENTRY ₹</div><input id="tf-e" type="number" value="${p.entry||''}" oninput="uRisk()"></div>
+      <div class="fld"><div class="fl">STOP ₹</div><input id="tf-sl" type="number" value="${p.sl||''}" oninput="uRisk()"></div>
+    </div>
+    <div class="g2">
+      <div class="fld"><div class="fl">TARGET ₹</div><input id="tf-t" type="number" value="${p.target||''}"></div>
+      <div class="fld"><div class="fl">QTY/LOTS</div><input id="tf-q" type="number"></div>
+    </div>
+    <div id="risk-area" style="background:var(--surf);border-radius:7px;padding:10px;margin-bottom:10px;font-size:11px;color:var(--mut)">Enter entry & SL to see risk.</div>
+    <div class="fld"><div class="fl">NOTES</div><textarea id="tf-n" placeholder="Why this trade?"></textarea></div>
+    <button class="btn gold full" onclick="addTrade()">+ Add to Journal</button>
+  </div>`:''}`;
+}
+function tGate(id){ST.gate[id]=!ST.gate[id];rGate();}
+function uRisk(){const e=+document.getElementById('tf-e')?.value||0,sl=+document.getElementById('tf-sl')?.value||0,tg=+document.getElementById('tf-t')?.value||0,q=+document.getElementById('tf-q')?.value||0;const ra=document.getElementById('risk-area');if(!ra||!e||!sl)return;const rA=ST.capital*0.015,sQ=Math.floor(rA/Math.abs(e-sl)),rr=tg?+(Math.abs(tg-e)/Math.abs(e-sl)).toFixed(2):null;ra.innerHTML=`<div style="display:flex;gap:14px;flex-wrap:wrap"><div><div style="font-size:9px;color:var(--mut)">MAX RISK</div><div style="font-weight:700;color:var(--ylw)">₹${rA.toLocaleString('en-IN',{maximumFractionDigits:0})}</div></div><div><div style="font-size:9px;color:var(--mut)">SUGGESTED QTY</div><div style="font-weight:700;color:var(--gold)">${sQ}</div></div><div><div style="font-size:9px;color:var(--mut)">RISK%</div><div style="font-weight:700">${Math.abs((e-sl)/e*100).toFixed(2)}%</div></div>${rr?`<div><div style="font-size:9px;color:var(--mut)">R:R</div><div style="font-weight:700;color:${rr>=2?'var(--grn)':rr>=1.5?'var(--ylw)':'var(--red)'}">${rr}x</div></div>`:''}</div>`;}
+function addTrade(){const sym=document.getElementById('tf-s')?.value?.toUpperCase().trim(),e=+document.getElementById('tf-e')?.value,sl=+document.getElementById('tf-sl')?.value,tg=+document.getElementById('tf-t')?.value,q=+document.getElementById('tf-q')?.value;if(!sym||!e||!sl||!tg||!q){alert('Fill all fields.');return;}const gS=GATES.filter(r=>ST.gate[r.id]).length,code=document.getElementById('tf-c')?.value||'S1';const t={id:Date.now(),date:f.tod(),symbol:sym,type:document.getElementById('tf-d').value,code,entry:e,sl,target:tg,qty:q,notes:document.getElementById('tf-n')?.value||'',riskPct:+Math.abs((e-sl)/e*100).toFixed(2),rrRatio:+Math.abs((tg-e)/Math.abs(e-sl)).toFixed(2),gateScore:gS,exitPrice:null,pnlPct:null,pnlRs:null};ST.trades.unshift(t);if(ST.prefill?.sigId)ST.signals=ST.signals.map(s=>s.id===ST.prefill.sigId?{...s,tradeTaken:true}:s);ST.prefill=null;ST.gate={};save();go('trd');}
+
+// ── TRADES ────────────────────────────────────────────────────────
+function rTrd(){const ot=ST.trades.filter(t=>!t.exitPrice),ct=ST.trades.filter(t=>t.exitPrice),tw=ct.filter(t=>t.pnlPct>0),tPnl=ct.reduce((s,t)=>s+(t.pnlRs||0),0),tWR=ct.length?(tw.length/ct.length*100).toFixed(0):0;
+  document.getElementById('tr-body').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="font-size:11px;color:var(--gold);font-weight:700">📋 TRADE JOURNAL</div><button class="btn gold sm" onclick="go('gate')">+ New</button></div>${ot.length?`<div style="font-size:10px;color:var(--ylw);font-weight:700;margin-bottom:7px">⚡ OPEN (${ot.length})</div>${ot.map(tRw).join('')}`:''} ${ct.length?`<div style="font-size:10px;color:var(--mut);font-weight:700;margin:8px 0 7px">CLOSED (${ct.length}) · WR ${tWR}% · ${f.rs(tPnl)}</div>${ct.map(tRw).join('')}`:''} ${!ST.trades.length?`<div class="empty">No trades yet.<br>Use Trade Gate first.</div>`:''}`;
+}
+function cC(c){return c==='S1'?'var(--blu)':c==='S2'?'var(--pur)':'var(--gold)';}
+function tRw(t){const cl=!!t.exitPrice,pc=t.pnlPct>0?'var(--grn)':t.pnlPct<0?'var(--red)':'var(--mut)',col=cC(t.code||'S1');return`<div class="trow" style="border-color:${cl?(t.pnlPct>0?'rgba(25,217,114,0.25)':'rgba(255,62,91,0.2)'):'var(--bdr)'}"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px;margin-bottom:6px"><div style="display:flex;gap:6px;align-items:center"><span style="color:var(--gold);font-weight:900;font-size:14px">${t.symbol}</span><span class="tag" style="background:rgba(0,0,0,.3);color:${col};border:1px solid ${col}">${t.code||'—'}</span><span class="tag" style="background:${t.type==='LONG'?'var(--grnD)':'var(--redD)'};color:${t.type==='LONG'?'var(--grn)':'var(--red)'}">${t.type}</span></div>${cl?`<div style="font-weight:800;font-size:13px;color:${pc}">${f.pct(t.pnlPct)} <span style="font-size:10px">(${f.rs(t.pnlRs)})</span></div>`:`<div style="color:var(--ylw);font-size:10px;font-weight:700">⚡ OPEN</div>`}</div><div class="tm"><span>Entry ${f.pr(t.entry)}</span>${cl?`<span>Exit ${f.pr(t.exitPrice)}</span>`:''}<span style="color:var(--red)">SL ${f.pr(t.sl)}</span><span style="color:var(--grn)">Tgt ${f.pr(t.target)}</span><span>Qty ${t.qty}</span><span>R:R ${t.rrRatio}</span><span style="color:${t.gateScore>=5?'var(--grn)':'var(--ylw)'}">Gate ${t.gateScore}/7</span></div>${t.notes?`<div style="font-size:10px;color:var(--mut);font-style:italic;margin-bottom:5px">"${t.notes}"</div>`:''} ${!cl?`<div style="display:flex;gap:5px;flex-wrap:wrap"><button class="btn gold sm" onclick="showCF(${t.id})">Close</button><button class="btn red sm" onclick="delT(${t.id})">Del</button></div><div id="cf${t.id}"></div>`:''}</div>`;}
+function showCF(id){document.getElementById(`cf${id}`).innerHTML=`<div style="background:var(--surf);border-radius:7px;padding:9px;margin-top:7px;display:flex;gap:5px;flex-wrap:wrap"><input type="number" id="ex${id}" placeholder="Exit ₹" style="flex:1;min-width:100px"><input type="date" id="exd${id}" value="${f.tod()}" style="flex:1;min-width:100px"><button class="btn green sm" onclick="clsTrd(${id})">✓ Confirm</button></div>`;}
+function clsTrd(id){const ep=+document.getElementById(`ex${id}`)?.value,ed=document.getElementById(`exd${id}`)?.value||f.tod();if(!ep)return;ST.trades=ST.trades.map(t=>{if(t.id!==id)return t;const pp=t.type==='LONG'?(ep-t.entry)/t.entry*100:(t.entry-ep)/t.entry*100;return{...t,exitPrice:ep,pnlPct:+pp.toFixed(2),pnlRs:+(pp/100*t.entry*t.qty).toFixed(0),exitDate:ed};});save();rTrd();}
+function delT(id){if(confirm('Delete?')){ST.trades=ST.trades.filter(t=>t.id!==id);save();rTrd();}}
+
+// ── Boot ──────────────────────────────────────────────────────────
+(function(){
+  const url=srvUrl();
+  if(!url){document.getElementById('setup').style.display='block';}
+  else{load();document.getElementById('app').style.display='block';render();checkServer();}
+  setInterval(checkServer,60000);
+})();
+</script>
+</body>
+</html>
